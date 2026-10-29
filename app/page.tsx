@@ -95,7 +95,7 @@ export default async function Home() {
 
       <section id="wins" className="mx-auto max-w-6xl px-4 pb-32 md:px-10 md:pb-48">
         <Label n="03">Achievements</Label>
-        <h2 data-heading className="mb-16 text-5xl font-bold tracking-tighter md:text-8xl">First year. Already winning.</h2>
+        <h2 data-heading className="mb-16 text-5xl font-bold tracking-tighter md:text-8xl">Proof of work.</h2>
         <div className="grid gap-6 md:grid-cols-6">
           {achievements.map((a, i) => (
             <article
