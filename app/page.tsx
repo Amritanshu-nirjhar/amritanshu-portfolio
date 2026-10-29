@@ -38,9 +38,8 @@ export default async function Home() {
           <p data-scrub-words className="text-3xl font-medium leading-tight tracking-tight md:text-5xl">
             {profile.bio}
           </p>
-          {/* Black and white to sit with the dark palette; colour comes back on hover. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img data-reveal src="/me.jpg" alt={profile.name} className="tilt aspect-[4/5] w-full rounded-2xl border border-white/10 object-cover grayscale transition-[filter,transform] duration-700 hover:grayscale-0" />
+          <img data-reveal data-scrub-color src="/me.jpg" alt={profile.name} className="tilt aspect-[4/5] w-full rounded-2xl border border-white/10 object-cover" />
         </div>
       </section>
 

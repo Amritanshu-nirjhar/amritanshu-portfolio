@@ -322,9 +322,13 @@ export default function Motion() {
         onEnter: (els) => gsap.from(els, { opacity: 0, y: 60, duration: 1, stagger: 0.12, ease: "power3.out" }),
       });
 
+      // Words light up as you scroll; any [data-scrub-color] image in the same section goes from B&W to colour in step.
       gsap.utils.toArray<HTMLElement>("[data-scrub-words]").forEach((el) => {
         const split = SplitText.create(el, { type: "words" });
-        gsap.from(split.words, { opacity: 0.15, stagger: 0.1, scrollTrigger: { trigger: el, start: "top 80%", end: "bottom 50%", scrub: true } });
+        const scrub = gsap.timeline({ scrollTrigger: { trigger: el, start: "top 80%", end: "bottom 50%", scrub: true } });
+        scrub.from(split.words, { opacity: 0.15, stagger: 0.1 }, 0);
+        const img = el.closest("section")?.querySelector("[data-scrub-color]");
+        if (img) scrub.fromTo(img, { filter: "grayscale(1)" }, { filter: "grayscale(0)", ease: "none", duration: scrub.duration() }, 0);
       });
 
       gsap.utils.toArray<HTMLElement>("[data-count]").forEach((el) => {
