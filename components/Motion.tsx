@@ -6,13 +6,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
-import { profile, projects, stack } from "@/lib/data";
+import { profile } from "@/lib/data";
 import { sfx, startSound, stopSound } from "@/lib/sound";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 const WORDS = ["Design.", "Code.", "Ship."];
-const CARDS = projects.filter((p) => p.image).slice(0, 3);
+const SHAPES = Array.from({ length: 48 }, (_, i) => i);
+const CELLS = Array.from({ length: 96 }, (_, i) => i);
+const FACES = ["rotateY(0deg)", "rotateY(90deg)", "rotateY(180deg)", "rotateY(-90deg)", "rotateX(90deg)", "rotateX(-90deg)"];
+const GLYPHS = ["✦", "○", "△", "□", "✕", "◐"];
 const ROW = `${profile.name.toUpperCase()} — DEVELOPER — `.repeat(4);
 
 // Drives every animation on the page via data attributes, so sections stay server components:
@@ -71,9 +74,13 @@ export default function Motion() {
         lenis.stop();
         const intro0 = tl.duration() - 0.6;
         const time = q("[data-i=time]")[0];
-        const tag = SplitText.create(q("[data-i=tag]"), { type: "lines", mask: "lines" });
-        const stackEl = q("[data-i=stack]")[0];
-        const cycle = { i: 0 };
+        const shapes = q("[data-i=shape]");
+        const cells = q("[data-i=cell]");
+        const cube = q("[data-i=cube]")[0];
+        const faces = q("[data-i=face]");
+        const half = cube.offsetWidth / 2;
+        const rand = gsap.utils.random;
+        gsap.set(faces, { z: half });
 
         tl.addLabel("intro", intro0)
           .call(() => { sfx.drone(20); sfx.riser(1.2); }, [], "intro")
@@ -91,36 +98,39 @@ export default function Motion() {
             .to(w, { yPercent: -140, duration: 0.5, ease: "expo.in" }, `intro+=${at + 0.8}`);
         });
 
-        // 5.6–8.6s: the stack flickers past like a slot machine.
-        tl.fromTo(q("[data-i=ring]"), { opacity: 0, rotate: -90 }, { opacity: 1, rotate: 0, duration: 0.6, ease: "expo.out" }, "intro+=5.6")
-          .fromTo(q("[data-i=ring] circle"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2.6, ease: "power3.in" }, "intro+=5.6")
-          .to(q("[data-i=ring]"), { opacity: 0, scale: 1.4, duration: 0.5, ease: "expo.in" }, "intro+=8.1")
-          .fromTo(stackEl, { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.4 }, "intro+=5.6")
-          .to(cycle, {
-            i: stack.length * 2 - 1, duration: 2.6, ease: "power3.in", roundProps: "i",
-            onUpdate: () => {
-              const next = stack[cycle.i % stack.length];
-              if (stackEl.textContent !== next) sfx.tick();
-              stackEl.textContent = next;
-            },
+        // 5.6–8.6s: shape storm. Geometry explodes out, spins, then gets sucked back in.
+        tl.call(() => sfx.hit(1), [], "intro+=5.6")
+          .fromTo(shapes, { x: 0, y: 0, scale: 0, rotate: 0, opacity: 1 }, {
+            x: () => rand(-50, 50) * innerWidth / 100,
+            y: () => rand(-45, 45) * innerHeight / 100,
+            scale: () => rand(0.6, 2.2),
+            rotate: () => rand(-540, 540),
+            duration: 1.3, ease: "expo.out", stagger: { amount: 0.25, from: "random" }, immediateRender: false,
           }, "intro+=5.6")
-          .to(stackEl, { opacity: 0, filter: "blur(12px)", duration: 0.4 }, "intro+=8.2");
+          .to(shapes, { rotate: "+=160", duration: 1.2, ease: "none" }, "intro+=6.8")
+          .call(() => sfx.riser(1.1), [], "intro+=7.2")
+          .to(shapes, { x: 0, y: 0, scale: 0, rotate: "+=360", duration: 0.8, ease: "expo.in", stagger: { amount: 0.15, from: "edges" } }, "intro+=7.7")
+          .call(() => sfx.hit(1), [], "intro+=8.5")
+          .fromTo(q("[data-i=flash]"), { opacity: 0.9 }, { opacity: 0, duration: 0.6, ease: "power2.out", immediateRender: false }, "intro+=8.5");
 
-        // 8.8–11.3s: the tagline, line by line.
-        tl.from(tag.lines, { yPercent: 100, duration: 0.9, stagger: 0.12, ease: "expo.out" }, "intro+=8.8")
-          .to(tag.lines, { yPercent: -100, duration: 0.6, stagger: 0.06, ease: "expo.in" }, "intro+=10.7");
+        // 8.8–11.4s: grid wave. Tiles flood out from the centre, ripple, then flip away from the edges.
+        const grid = { grid: [8, 12] as [number, number] };
+        for (let k = 0; k < 12; k++) tl.call(() => sfx.tick(), [], `intro+=${8.8 + k * 0.06}`);
+        tl.fromTo(cells, { scale: 0, rotate: 90 }, { scale: 1, rotate: 0, duration: 0.6, ease: "back.out(2)", stagger: { ...grid, from: "center", amount: 0.7 } }, "intro+=8.8")
+          .call(() => sfx.hit(0.6), [], "intro+=9.9")
+          .to(cells, { scale: 0.3, duration: 0.35, yoyo: true, repeat: 1, ease: "power2.inOut", stagger: { ...grid, from: "center", amount: 0.5 } }, "intro+=9.9")
+          .call(() => sfx.whoosh(), [], "intro+=10.8")
+          .to(cells, { rotateX: 90, scale: 0, duration: 0.5, ease: "expo.in", stagger: { ...grid, from: "edges", amount: 0.5 } }, "intro+=10.8");
 
-        // 11.4–14.4s: project screenshots fly in as 3D cards and fan out.
-        const cards = q("[data-i=card]");
-        tl.from(q("[data-i=cards-label]"), { opacity: 0, y: 20, duration: 0.6 }, "intro+=11.4");
-        cards.forEach((c, i) => {
-          const at = 11.5 + i * 0.35;
-          tl.call(() => sfx.hit(0.5), [], `intro+=${at + 0.4}`)
-            .fromTo(c, { z: -1600, rotateY: 60, rotateX: 20, opacity: 0 }, { z: 0, rotateY: 0, rotateX: 0, opacity: 1, duration: 1, ease: "expo.out" }, `intro+=${at}`)
-            .to(c, { xPercent: (i - (cards.length - 1) / 2) * 105, rotateY: (i - (cards.length - 1) / 2) * -18, duration: 1, ease: "expo.inOut" }, "intro+=12.7");
-        });
-        tl.to(cards, { z: 900, opacity: 0, duration: 0.7, stagger: 0.06, ease: "expo.in" }, "intro+=13.7")
-          .to(q("[data-i=cards-label]"), { opacity: 0, duration: 0.3 }, "intro+=13.9");
+        // 11.4–14.4s: a 3D cube slams in, spins hard, then blows apart face by face.
+        tl.fromTo(cube, { scale: 0, rotateX: -200, rotateY: -120, opacity: 1 }, { scale: 1, rotateX: -25, rotateY: 35, duration: 1.1, ease: "expo.out", immediateRender: false }, "intro+=11.4")
+          .call(() => sfx.hit(1), [], "intro+=11.5")
+          .call(() => sfx.hit(0.6), [], "intro+=12.4")
+          .to(cube, { rotateY: "+=270", rotateX: "+=180", duration: 1.5, ease: "power3.inOut" }, "intro+=12.4")
+          .call(() => sfx.riser(1.1), [], "intro+=12.9")
+          .to(cube, { scale: 1.25, duration: 0.3, ease: "power2.out" }, "intro+=13.9")
+          .call(() => sfx.hit(1), [], "intro+=14.05")
+          .to(faces, { z: half * 6, opacity: 0, duration: 0.5, ease: "expo.in", stagger: 0.03 }, "intro+=14");
 
         // 14.4–16.4s: outlined name rows race across, accelerating.
         q("[data-i=row]").forEach((r, i) => {
@@ -240,24 +250,43 @@ export default function Motion() {
               <span className="block">{w}</span>
             </p>
           ))}
-          <svg data-i="ring" viewBox="0 0 100 100" className="col-start-1 row-start-1 size-[70vmin] -rotate-90 opacity-0">
-            <circle cx="50" cy="50" r="48" fill="none" stroke="#c6f432" strokeWidth="0.3" pathLength={1} strokeDasharray="1" />
-          </svg>
-          <p data-i="stack" className="col-start-1 row-start-1 font-mono text-[9vw] text-lime-300 opacity-0 md:text-[6vw]">{stack[0]}</p>
-          <p data-i="tag" className="col-start-1 row-start-1 max-w-4xl text-4xl font-medium leading-tight tracking-tight md:text-6xl">{profile.tagline}</p>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 grid place-items-center [perspective:1200px]">
-          {CARDS.map((p) => (
-            <figure key={p.name} data-i="card" className="col-start-1 row-start-1 w-[60vw] opacity-0 md:w-[30vw]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.image} alt="" className="aspect-[16/10] w-full rounded-lg border border-white/15 object-cover object-top shadow-2xl shadow-black" />
-              <figcaption className="mt-3 font-mono text-xs uppercase tracking-widest text-zinc-400">{p.name}</figcaption>
-            </figure>
+        <div className="pointer-events-none absolute inset-0 grid place-items-center">
+          {SHAPES.map((i) => {
+            const size = `${2 + ((i * 7) % 9)}vmin`;
+            const kind = [
+              "rounded-full border-2 border-lime-300",
+              "bg-zinc-100",
+              "!h-[2px] bg-lime-300",
+              "bg-zinc-100 [clip-path:polygon(50%_0,100%_100%,0_100%)]",
+            ][i % 4];
+            return <div key={i} data-i="shape" className={`col-start-1 row-start-1 opacity-0 ${kind}`} style={{ width: i % 4 === 2 ? `calc(${size} * 2)` : size, height: size }} />;
+          })}
+        </div>
+        <div data-i="flash" className="pointer-events-none absolute inset-0 bg-zinc-100 opacity-0" />
+
+        <div className="pointer-events-none absolute inset-0 grid grid-cols-12 grid-rows-8 gap-[3px] p-[3px] [perspective:800px]">
+          {CELLS.map((i) => (
+            <div
+              key={i}
+              data-i="cell"
+              className={(i * 7) % 11 === 0 ? "bg-zinc-100" : (i * 3) % 7 === 0 ? "border border-lime-300" : "bg-lime-300"}
+              style={{ transform: "scale(0)" }}
+            />
           ))}
-          <p data-i="cards-label" className="absolute bottom-[14%] font-mono text-xs uppercase tracking-[0.4em] text-lime-300 opacity-0">
-            Selected work — {String(CARDS.length).padStart(2, "0")}
-          </p>
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 grid place-items-center [perspective:900px]">
+          <div data-i="cube" className="relative size-[34vmin] opacity-0 [transform-style:preserve-3d]">
+            {FACES.map((f, i) => (
+              <div key={f} className="absolute inset-0 [transform-style:preserve-3d]" style={{ transform: f }}>
+                <div data-i="face" className={`grid size-full place-items-center border-2 border-lime-300 text-[14vmin] font-bold ${i % 2 ? "bg-lime-300 text-black" : "bg-[#050505]/85 text-lime-300"}`}>
+                  {GLYPHS[i]}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div data-i="rows" className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-2 overflow-hidden">
