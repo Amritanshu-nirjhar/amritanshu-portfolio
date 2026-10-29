@@ -1,6 +1,6 @@
 import Hero from "@/components/Hero";
 import Motion from "@/components/Motion";
-import { experience, profile, stack, stats } from "@/lib/data";
+import { achievements, experience, profile, stack, stats } from "@/lib/data";
 import { getProjects } from "@/lib/vercel";
 
 const screenshot = (url: string) =>
@@ -25,6 +25,7 @@ export default async function Home() {
         <div className="flex gap-5 md:gap-8">
           <a href="#work" className="hover:opacity-60">Work</a>
           <a href="#about" className="hover:opacity-60">About</a>
+          <a href="#wins" className="hover:opacity-60">Wins</a>
           <a href="#contact" className="hover:opacity-60">Contact</a>
         </div>
       </nav>
@@ -37,7 +38,7 @@ export default async function Home() {
           <p data-scrub-words className="text-3xl font-medium leading-tight tracking-tight md:text-5xl">
             {profile.bio}
           </p>
-          {/* TODO: swap for <img src="/me.jpg"> */}
+          {/* TODO: swap for the About image Amritanshu sends */}
           <div data-reveal className="tilt grid aspect-[4/5] place-items-center rounded-2xl border border-white/10 bg-gradient-to-br from-lime-300/20 via-zinc-900 to-zinc-950 text-8xl font-bold">
             {profile.name[0]}
           </div>
@@ -94,8 +95,42 @@ export default async function Home() {
         </div>
       </section>
 
+      <section id="wins" className="mx-auto max-w-6xl px-4 pb-32 md:px-10 md:pb-48">
+        <Label n="03">Achievements</Label>
+        <h2 data-heading className="mb-16 text-5xl font-bold tracking-tighter md:text-8xl">First year. Already winning.</h2>
+        <div className="grid gap-6 md:grid-cols-6">
+          {achievements.map((a, i) => (
+            <article
+              key={a.title}
+              data-reveal
+              className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-lime-300/50 ${
+                ["md:col-span-4", "md:col-span-2", "md:col-span-6"][i]
+              }`}
+            >
+              <div className={`relative overflow-hidden ${i < 2 ? "aspect-[4/5] md:aspect-auto md:h-[34rem]" : "aspect-[16/10] md:aspect-[21/8]"}`}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.image} alt={a.title} loading="lazy" className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-105" />
+                {a.hoverImage && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={a.hoverImage} alt="" loading="lazy" className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                <p className="absolute left-5 top-5 rounded-full bg-lime-300 px-4 py-1.5 font-mono text-sm font-bold text-black">
+                  {a.rank} <span className="font-normal opacity-70">{a.of}</span>
+                </p>
+                <div className="absolute inset-x-5 bottom-5">
+                  <p className="font-mono text-xs uppercase tracking-widest text-zinc-400">{a.org}</p>
+                  <h3 className={`mt-2 font-semibold tracking-tight transition-colors group-hover:text-lime-300 ${i === 0 ? "text-4xl md:text-6xl" : "text-2xl md:text-3xl"}`}>{a.title}</h3>
+                  <p className="mt-2 max-w-md text-zinc-300">{a.text}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="mx-auto max-w-6xl px-4 pb-32 md:px-10 md:pb-48">
-        <Label n="03">Journey</Label>
+        <Label n="04">Journey</Label>
         <div className="relative pl-8 md:pl-12">
           <div data-line className="absolute left-0 top-0 h-full w-px bg-gradient-to-b from-lime-300 via-lime-300/40 to-transparent" />
           {experience.map((e) => (
@@ -126,7 +161,7 @@ export default async function Home() {
 
       <section id="contact" className="relative overflow-hidden px-4 py-40 text-center md:px-10 md:py-56">
         <div className="glow absolute inset-0 -z-10" />
-        <Label n="04">Contact</Label>
+        <Label n="05">Contact</Label>
         <h2 data-heading className="text-6xl font-bold leading-[0.9] tracking-tighter md:text-[9vw]">
           Let&apos;s build<br />something.
         </h2>

@@ -40,14 +40,41 @@ export const projects: Project[] = [
   { name: "Zero", description: "Learn. Build. Get hired.", url: "https://zero-pink-sigma.vercel.app", image: "/projects/zero.jpg", tags: ["Next.js"] },
 ];
 
+export const achievements = [
+  {
+    rank: "#4",
+    of: "/ 860 teams",
+    title: "Hack Synapse 2026",
+    org: "IEEE · 36-hour national hackathon · MITS-DU Gwalior",
+    text: "Podium finish out of 860 teams, and the only first-year team in the top 16.",
+    image: "/achievements/hack-synapse.jpg",
+  },
+  {
+    rank: "1st",
+    of: "place",
+    title: "E-Summit ’26",
+    org: "eCell, Netaji Subhas University of Technology",
+    text: "Won first position at NSUT's flagship entrepreneurship summit.",
+    image: "/achievements/nsut-trophy.jpg",
+    hoverImage: "/achievements/nsut-certificates.jpg",
+  },
+  {
+    rank: "Top 5",
+    of: "finish",
+    title: "Product Paradox · INTERFACE ’26",
+    org: "Department of Management, BITS Pilani",
+    text: "Product strategy competition run by The Tech Geeks Club at BITS Pilani.",
+    image: "/achievements/bits-certificate.jpg",
+  },
+];
+
 export const experience = [
-  { when: "2025 — Now", role: "TODO Role", org: "TODO Company", text: "What you built and the impact it had." },
-  { when: "2024", role: "TODO Hackathon", org: "TODO Event", text: "What you built and what you won." },
-  { when: "2023", role: "Started coding", org: "Self-taught", text: "Where it all began." },
+  { when: "2026 — Now", role: "CSE Student", org: "Newton School of Technology, Rishihood University", text: "Studying CSE while shipping real products on the side." },
+  { when: "2026", role: "Hackathon & product circuit", org: "IEEE · NSUT · BITS Pilani", text: "A podium at an 860-team national hackathon, a first place at NSUT and a top 5 at BITS Pilani, in my first semester." },
 ];
 
 export const stats = [
-  { value: 20, suffix: "+", label: "Projects shipped" },
-  { value: 500, suffix: "+", label: "GitHub contributions" },
-  { value: 3, suffix: "", label: "Years coding" },
+  { value: 4, suffix: "", label: "Projects live" },
+  { value: 3, suffix: "", label: "Podium & top-5 finishes" },
+  { value: 860, suffix: "", label: "Teams in my biggest hackathon" },
 ];
