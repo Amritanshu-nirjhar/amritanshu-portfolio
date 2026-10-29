@@ -102,10 +102,10 @@ export default async function Home() {
               key={a.title}
               data-reveal
               className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-lime-300/50 ${
-                ["md:col-span-4", "md:col-span-2", "md:col-span-6"][i]
+                ["md:col-span-4", "md:col-span-2", "md:col-span-3", "md:col-span-3"][i]
               }`}
             >
-              <div className={`relative overflow-hidden ${i < 2 ? "aspect-[4/5] md:aspect-auto md:h-[34rem]" : "aspect-[16/10] md:aspect-[21/8]"}`}>
+              <div className={`relative overflow-hidden ${i < 2 ? "aspect-[4/5] md:aspect-auto md:h-[34rem]" : "aspect-[16/10]"}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={a.image} alt={a.title} loading="lazy" className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-105" />
                 {a.hoverImage && (

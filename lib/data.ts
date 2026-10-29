@@ -42,12 +42,12 @@ export const projects: Project[] = [
 
 export const achievements = [
   {
-    rank: "#4",
-    of: "/ 860 teams",
-    title: "Hack Synapse 2026",
-    org: "IEEE · 36-hour national hackathon · MITS-DU Gwalior",
-    text: "Podium finish out of 860 teams, and the only first-year team in the top 16.",
-    image: "/achievements/hack-synapse.jpg",
+    rank: "Chair",
+    of: "person",
+    title: "Model United Nations",
+    org: "Chairperson & Executive Board · Delhi NCR",
+    text: "Chaired committees from UNCSW to WHO across the Delhi NCR MUN circuit, and still chairing regularly.",
+    image: "/achievements/mun-awards.jpg",
   },
   {
     rank: "1st",
@@ -57,6 +57,14 @@ export const achievements = [
     text: "Won first position at NSUT's flagship entrepreneurship summit.",
     image: "/achievements/nsut-trophy.jpg",
     hoverImage: "/achievements/nsut-certificates.jpg",
+  },
+  {
+    rank: "#4",
+    of: "/ 860 teams",
+    title: "Hack Synapse 2026",
+    org: "IEEE · 36-hour national hackathon · MITS-DU Gwalior",
+    text: "Podium finish out of 860 teams, and the only first-year team in the top 16.",
+    image: "/achievements/hack-synapse.jpg",
   },
   {
     rank: "Top 5",
@@ -71,6 +79,7 @@ export const achievements = [
 export const experience = [
   { when: "2026 — Now", role: "CSE Student", org: "Newton School of Technology, Rishihood University", text: "Studying CSE while shipping real products on the side." },
   { when: "2026", role: "Hackathon & product circuit", org: "IEEE · NSUT · BITS Pilani", text: "A podium at an 860-team national hackathon, a first place at NSUT and a top 5 at BITS Pilani, in my first semester." },
+  { when: "2024 — Now", role: "Chairperson & Executive Board", org: "Model United Nations circuit", text: "Chairing committees like UNCSW and WHO: running debate, keeping order and judging delegates." },
 ];
 
 export const stats = [
