@@ -120,10 +120,10 @@ export default async function Home() {
             >
               <div className={`relative overflow-hidden ${i < 2 ? "aspect-[4/5] md:aspect-auto md:h-[26rem]" : "aspect-[16/10]"}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.image} alt={a.title} loading="lazy" className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-105" />
+                <img src={a.image} alt={a.title} decoding="async" className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-105" />
                 {a.hoverImage && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={a.hoverImage} alt="" loading="lazy" className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <img src={a.hoverImage} alt="" decoding="async" className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 )}
                 <p className="absolute left-5 top-5 rounded-full bg-lime-300 px-4 py-1.5 font-mono text-sm font-bold text-black">
                   {a.rank} <span className="font-normal opacity-70">{a.of}</span>
