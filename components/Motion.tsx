@@ -16,6 +16,9 @@ const SHAPES = Array.from({ length: 48 }, (_, i) => i);
 const CELLS = Array.from({ length: 96 }, (_, i) => i);
 const FACES = ["rotateY(0deg)", "rotateY(90deg)", "rotateY(180deg)", "rotateY(-90deg)", "rotateX(90deg)", "rotateX(-90deg)"];
 const GLYPHS = ["✦", "○", "△", "□", "✕", "◐"];
+const RINGS = Array.from({ length: 8 }, (_, i) => i);
+const BARS = Array.from({ length: 28 }, (_, i) => i);
+const STRIPS = Array.from({ length: 6 }, (_, i) => i);
 const ROW = `${profile.name.toUpperCase()} — DEVELOPER — `.repeat(4);
 
 // Drives every animation on the page via data attributes, so sections stay server components:
@@ -76,80 +79,127 @@ export default function Motion() {
         const time = q("[data-i=time]")[0];
         const shapes = q("[data-i=shape]");
         const cells = q("[data-i=cell]");
+        const rings = q("[data-i=ring]");
+        const spin = q("[data-i=spin]");
+        const bars = q("[data-i=bar]");
+        const strips = q("[data-i=strip]");
+        const year = q("[data-i=year]");
+        const chars = q("[data-i=ch]");
+        const flash = q("[data-i=flash]");
         const cube = q("[data-i=cube]")[0];
         const faces = q("[data-i=face]");
         const half = cube.offsetWidth / 2;
         const rand = gsap.utils.random;
+        const at = (t: number) => `intro+=${t}`;
+        const ticks = (from: number, n: number, gap: number) => {
+          for (let k = 0; k < n; k++) tl.call(() => sfx.tick(), [], at(from + k * gap));
+        };
         gsap.set(faces, { z: half });
 
         tl.addLabel("intro", intro0)
-          .call(() => { sfx.drone(20); sfx.riser(1.2); }, [], "intro")
-          // 0–1.6s: a lime hairline slices the screen.
-          .from(q("[data-i=line]"), { scaleX: 0, duration: 1.2, ease: "expo.inOut" }, "intro")
-          .to(q("[data-i=line]"), { scaleX: 0, transformOrigin: "right", duration: 0.6, ease: "expo.in" }, "intro+=1.1")
-          .from(q("[data-i=meta]"), { opacity: 0, duration: 0.6 }, "intro+=0.2");
+          .call(() => { sfx.drone(20); sfx.riser(0.8); }, [], at(0))
+          // 0–1s: a lime hairline slices the screen.
+          .from(q("[data-i=line]"), { scaleX: 0, duration: 0.7, ease: "expo.inOut" }, at(0))
+          .to(q("[data-i=line]"), { scaleX: 0, transformOrigin: "right", duration: 0.35, ease: "expo.in" }, at(0.65))
+          .from(q("[data-i=meta]"), { opacity: 0, duration: 0.4 }, at(0.1));
 
-        // 1.6–5.5s: Design. Code. Ship.
+        // 1–3.4s: Design. Code. Ship. Glitch-slammed, 0.8s apart.
         q("[data-i=word] span").forEach((w, i) => {
-          const at = 1.6 + i * 1.3;
-          tl.call(() => sfx.hit(), [], `intro+=${at}`)
-            .fromTo(w, { yPercent: 140 }, { yPercent: 0, duration: 0.6, ease: "expo.out" }, `intro+=${at}`)
-            .fromTo(w, { textShadow: "0.06em 0 #c6f432, -0.06em 0 #ff2bd6", skewX: -12 }, { textShadow: "0em 0 #c6f432, 0em 0 #ff2bd6", skewX: 0, duration: 0.5, ease: "power3.out" }, `intro+=${at + 0.1}`)
-            .to(w, { yPercent: -140, duration: 0.5, ease: "expo.in" }, `intro+=${at + 0.8}`);
+          const t = 1 + i * 0.8;
+          tl.call(() => sfx.hit(), [], at(t))
+            .fromTo(w, { yPercent: 140 }, { yPercent: 0, duration: 0.4, ease: "expo.out" }, at(t))
+            .fromTo(w, { textShadow: "0.06em 0 #c6f432, -0.06em 0 #ff2bd6", skewX: -12 }, { textShadow: "0em 0 #c6f432, 0em 0 #ff2bd6", skewX: 0, duration: 0.35, ease: "power3.out" }, at(t + 0.05))
+            .to(w, { yPercent: -140, duration: 0.3, ease: "expo.in" }, at(t + 0.5));
         });
 
-        // 5.6–8.6s: shape storm. Geometry explodes out, spins, then gets sucked back in.
-        tl.call(() => sfx.hit(1), [], "intro+=5.6")
+        // 3.4–5s: shape storm. Geometry explodes out, spins, gets sucked back in, flash.
+        tl.call(() => sfx.hit(1), [], at(3.4))
           .fromTo(shapes, { x: 0, y: 0, scale: 0, rotate: 0, opacity: 1 }, {
             x: () => rand(-50, 50) * innerWidth / 100,
             y: () => rand(-45, 45) * innerHeight / 100,
             scale: () => rand(0.6, 2.2),
             rotate: () => rand(-540, 540),
-            duration: 1.3, ease: "expo.out", stagger: { amount: 0.25, from: "random" }, immediateRender: false,
-          }, "intro+=5.6")
-          .to(shapes, { rotate: "+=160", duration: 1.2, ease: "none" }, "intro+=6.8")
-          .call(() => sfx.riser(1.1), [], "intro+=7.2")
-          .to(shapes, { x: 0, y: 0, scale: 0, rotate: "+=360", duration: 0.8, ease: "expo.in", stagger: { amount: 0.15, from: "edges" } }, "intro+=7.7")
-          .call(() => sfx.hit(1), [], "intro+=8.5")
-          .fromTo(q("[data-i=flash]"), { opacity: 0.9 }, { opacity: 0, duration: 0.6, ease: "power2.out", immediateRender: false }, "intro+=8.5");
+            duration: 0.8, ease: "expo.out", stagger: { amount: 0.15, from: "random" }, immediateRender: false,
+          }, at(3.4))
+          .to(shapes, { rotate: "+=120", duration: 0.6, ease: "none" }, at(4))
+          .call(() => sfx.riser(0.5), [], at(4.45))
+          .to(shapes, { x: 0, y: 0, scale: 0, rotate: "+=360", duration: 0.45, ease: "expo.in", stagger: { amount: 0.1, from: "edges" } }, at(4.45))
+          .call(() => sfx.hit(1), [], at(4.95))
+          .fromTo(flash, { opacity: 0.9 }, { opacity: 0, duration: 0.4, ease: "power2.out", immediateRender: false }, at(4.95));
 
-        // 8.8–11.4s: grid wave. Tiles flood out from the centre, ripple, then flip away from the edges.
+        // 5–6.6s: grid wave. Tiles flood from the centre, ripple, flip away from the edges.
         const grid = { grid: [8, 12] as [number, number] };
-        for (let k = 0; k < 12; k++) tl.call(() => sfx.tick(), [], `intro+=${8.8 + k * 0.06}`);
-        tl.fromTo(cells, { scale: 0, rotate: 90 }, { scale: 1, rotate: 0, duration: 0.6, ease: "back.out(2)", stagger: { ...grid, from: "center", amount: 0.7 } }, "intro+=8.8")
-          .call(() => sfx.hit(0.6), [], "intro+=9.9")
-          .to(cells, { scale: 0.3, duration: 0.35, yoyo: true, repeat: 1, ease: "power2.inOut", stagger: { ...grid, from: "center", amount: 0.5 } }, "intro+=9.9")
-          .call(() => sfx.whoosh(), [], "intro+=10.8")
-          .to(cells, { rotateX: 90, scale: 0, duration: 0.5, ease: "expo.in", stagger: { ...grid, from: "edges", amount: 0.5 } }, "intro+=10.8");
+        ticks(5, 10, 0.04);
+        tl.fromTo(cells, { scale: 0, rotate: 90 }, { scale: 1, rotate: 0, duration: 0.4, ease: "back.out(2)", stagger: { ...grid, from: "center", amount: 0.4 } }, at(5))
+          .call(() => sfx.hit(0.6), [], at(5.7))
+          .to(cells, { scale: 0.3, duration: 0.2, yoyo: true, repeat: 1, ease: "power2.inOut", stagger: { ...grid, from: "center", amount: 0.3 } }, at(5.7))
+          .call(() => sfx.whoosh(), [], at(6.1))
+          .to(cells, { rotateX: 90, scale: 0, duration: 0.3, ease: "expo.in", stagger: { ...grid, from: "edges", amount: 0.3 } }, at(6.15));
 
-        // 11.4–14.4s: a 3D cube slams in, spins hard, then blows apart face by face.
-        tl.fromTo(cube, { scale: 0, rotateX: -200, rotateY: -120, opacity: 1 }, { scale: 1, rotateX: -25, rotateY: 35, duration: 1.1, ease: "expo.out", immediateRender: false }, "intro+=11.4")
-          .call(() => sfx.hit(1), [], "intro+=11.5")
-          .call(() => sfx.hit(0.6), [], "intro+=12.4")
-          .to(cube, { rotateY: "+=270", rotateX: "+=180", duration: 1.5, ease: "power3.inOut" }, "intro+=12.4")
-          .call(() => sfx.riser(1.1), [], "intro+=12.9")
-          .to(cube, { scale: 1.25, duration: 0.3, ease: "power2.out" }, "intro+=13.9")
-          .call(() => sfx.hit(1), [], "intro+=14.05")
-          .to(faces, { z: half * 6, opacity: 0, duration: 0.5, ease: "expo.in", stagger: 0.03 }, "intro+=14");
+        // 6.6–8s: radar rings pulse out around a spinning dashed ring.
+        ticks(6.6, 8, 0.1);
+        tl.call(() => sfx.hit(0.7), [], at(6.6))
+          .fromTo(rings, { scale: 0, opacity: 1 }, { scale: (i) => 3 + i * 1.4, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.08, immediateRender: false }, at(6.6))
+          .fromTo(spin, { scale: 0, rotate: -180, opacity: 1 }, { scale: 1, rotate: 180, duration: 1.1, ease: "expo.out", immediateRender: false }, at(6.6))
+          .to(spin, { scale: 0, rotate: "+=180", duration: 0.3, ease: "expo.in" }, at(7.7));
 
-        // 14.4–16.4s: outlined name rows race across, accelerating.
+        // 8–9.6s: 3D cube slams in, spins hard, blows apart face by face.
+        tl.fromTo(cube, { scale: 0, rotateX: -200, rotateY: -120, opacity: 1 }, { scale: 1, rotateX: -25, rotateY: 35, duration: 0.6, ease: "expo.out", immediateRender: false }, at(8))
+          .call(() => sfx.hit(1), [], at(8.05))
+          .call(() => sfx.hit(0.6), [], at(8.6))
+          .to(cube, { rotateY: "+=270", rotateX: "+=180", duration: 0.8, ease: "power3.inOut" }, at(8.6))
+          .call(() => sfx.hit(1), [], at(9.35))
+          .to(faces, { z: half * 6, opacity: 0, duration: 0.35, ease: "expo.in", stagger: 0.02 }, at(9.3));
+
+        // 9.6–11s: equalizer bars bounce like you can see the sound.
+        tl.fromTo(bars, { scaleY: 0, opacity: 1 }, { scaleY: () => rand(0.15, 1), duration: 0.25, ease: "power2.out", stagger: { each: 0.012, from: "center" }, immediateRender: false }, at(9.6));
+        for (let k = 1; k <= 4; k++) {
+          tl.call(() => sfx.tick(), [], at(9.6 + k * 0.22))
+            .to(bars, { scaleY: () => rand(0.1, 1), duration: 0.18, ease: "power2.inOut", stagger: { each: 0.008, from: "random" } }, at(9.6 + k * 0.22));
+        }
+        tl.to(bars, { scaleY: 0, duration: 0.3, ease: "expo.in", stagger: { each: 0.01, from: "edges" } }, at(10.7));
+
+        // 11–12.6s: strips slam in from alternating sides, a giant year blends over them, then out.
+        tl.call(() => sfx.whoosh(), [], at(11))
+          .fromTo(strips, { xPercent: (i) => (i % 2 ? 101 : -101) }, { xPercent: 0, duration: 0.45, ease: "expo.out", stagger: 0.05 }, at(11))
+          .call(() => sfx.hit(1), [], at(11.4))
+          .fromTo(year, { scale: 3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "expo.out", immediateRender: false }, at(11.35))
+          .to(strips, { xPercent: (i) => (i % 2 ? -101 : 101), duration: 0.45, ease: "expo.in", stagger: 0.04 }, at(12.1))
+          .to(year, { opacity: 0, scale: 0.6, duration: 0.3, ease: "expo.in" }, at(12.2));
+
+        // 12.6–14.4s: the name's letters fly in from 3D space, lock together, then shatter.
+        tl.fromTo(chars, {
+            x: () => rand(-600, 600), y: () => rand(-400, 400), z: () => rand(-1500, 600),
+            rotateX: () => rand(-180, 180), rotateY: () => rand(-180, 180), opacity: 0,
+          }, {
+            x: 0, y: 0, z: 0, rotateX: 0, rotateY: 0, opacity: 1,
+            duration: 0.8, ease: "expo.out", stagger: { amount: 0.2, from: "random" }, immediateRender: false,
+          }, at(12.6))
+          .call(() => sfx.hit(1), [], at(13.1))
+          .call(() => sfx.whoosh(), [], at(13.7))
+          .to(chars, {
+            x: () => rand(-900, 900), y: () => rand(-600, 600), z: () => rand(200, 1200), rotate: () => rand(-180, 180), opacity: 0,
+            duration: 0.55, ease: "expo.in", stagger: { amount: 0.12, from: "center" },
+          }, at(13.7));
+
+        // 14.4–16s: outlined name rows race across, accelerating.
         q("[data-i=row]").forEach((r, i) => {
           const dir = i % 2 ? 1 : -1;
-          tl.fromTo(r, { xPercent: dir > 0 ? -50 : 0, opacity: 0 }, { xPercent: dir > 0 ? 0 : -50, opacity: 1, duration: 2, ease: "power2.in" }, "intro+=14.4");
+          tl.fromTo(r, { xPercent: dir > 0 ? -50 : 0, opacity: 0 }, { xPercent: dir > 0 ? 0 : -50, opacity: 1, duration: 1.6, ease: "power2.in" }, at(14.4));
         });
-        tl.call(() => sfx.riser(2), [], "intro+=14.4")
-          .to(q("[data-i=rows]"), { scale: 1.3, rotate: -4, duration: 2, ease: "power2.in" }, "intro+=14.4")
-          .to(q("[data-i=rows]"), { opacity: 0, duration: 0.2 }, "intro+=16.3");
+        tl.call(() => sfx.riser(1.6), [], at(14.4))
+          .to(q("[data-i=rows]"), { scale: 1.3, rotate: -4, duration: 1.6, ease: "power2.in" }, at(14.4))
+          .to(q("[data-i=rows]"), { opacity: 0, duration: 0.15 }, at(15.9));
 
-        // 16.4–19s: lime panel rises, name lands.
-        tl.call(() => sfx.impact(), [], "intro+=16.8")
-          .fromTo(q("[data-i=panel]"), { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "expo.inOut" }, "intro+=16.4")
-          .from(q("[data-i=name]"), { scale: 1.5, opacity: 0, filter: "blur(20px)", duration: 1.4, ease: "expo.out" }, "intro+=16.8")
-          .from(q("[data-i=panel-meta]"), { opacity: 0, y: 10, duration: 0.6, stagger: 0.1 }, "intro+=17.4");
+        // 16–19s: lime panel rises, name lands.
+        tl.call(() => sfx.impact(), [], at(16.35))
+          .fromTo(q("[data-i=panel]"), { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "expo.inOut" }, at(16))
+          .from(q("[data-i=name]"), { scale: 1.5, opacity: 0, filter: "blur(20px)", duration: 1.2, ease: "expo.out" }, at(16.35))
+          .from(q("[data-i=panel-meta]"), { opacity: 0, y: 10, duration: 0.5, stagger: 0.1 }, at(16.9));
 
         // 19–20s: the whole intro wipes up to reveal the site.
-        tl.call(() => sfx.whoosh(), [], "intro+=18.9")
-          .to(intro, { clipPath: "inset(0% 0% 100% 0%)", duration: 1, ease: "expo.inOut" }, "intro+=19")
+        tl.call(() => sfx.whoosh(), [], at(18.9))
+          .to(intro, { clipPath: "inset(0% 0% 100% 0%)", duration: 1, ease: "expo.inOut" }, at(19))
           .set(intro, { display: "none" })
           .add(() => {
             lenis.start();
@@ -287,6 +337,36 @@ export default function Motion() {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 grid place-items-center">
+          {RINGS.map((i) => (
+            <div key={i} data-i="ring" className="col-start-1 row-start-1 size-[12vmin] rounded-full border border-lime-300 opacity-0" />
+          ))}
+          <div data-i="spin" className="col-start-1 row-start-1 size-[50vmin] rounded-full border-2 border-dashed border-zinc-100 opacity-0" />
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-[0.8vw]">
+          {BARS.map((i) => (
+            <div key={i} data-i="bar" className={`h-[60vh] w-[2vw] opacity-0 ${i % 5 === 0 ? "bg-zinc-100" : "bg-lime-300"}`} />
+          ))}
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 flex flex-col overflow-hidden">
+          {STRIPS.map((i) => (
+            <div key={i} data-i="strip" className={`flex-1 ${i % 2 ? "bg-zinc-100" : "bg-lime-300"}`} />
+          ))}
+        </div>
+        <p data-i="year" className="pointer-events-none absolute inset-0 grid place-items-center text-[30vw] font-bold tracking-[-0.06em] text-white opacity-0 mix-blend-difference">
+          2026
+        </p>
+
+        <div className="pointer-events-none absolute inset-0 grid place-items-center [perspective:1000px]">
+          <p className="whitespace-nowrap text-[15vw] font-bold tracking-[-0.06em] [transform-style:preserve-3d]">
+            {profile.name.toUpperCase().split("").map((c, i) => (
+              <span key={i} data-i="ch" className={`inline-block opacity-0 ${i % 2 ? "text-lime-300" : ""}`}>{c}</span>
+            ))}
+          </p>
         </div>
 
         <div data-i="rows" className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-2 overflow-hidden">
