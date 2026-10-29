@@ -36,6 +36,7 @@ export type Project = {
 export const projects: Project[] = [
   { name: "Odyssey", description: "A scroll-driven 3D journey from Earth to the event horizon of Sagittarius A*.", url: "https://odyssey-sable-nine.vercel.app", image: "/projects/odyssey.jpg", tags: ["Three.js", "GSAP", "WebGL"] },
   { name: "Lila Worlds", description: "Studio site for a Bengaluru team building playable worlds for Fortnite, Roblox and Meta Quest.", url: "https://lila-worlds.vercel.app", image: "/projects/lila-worlds.jpg", tags: ["Three.js", "GSAP"] },
+  { name: "The Product Guys", description: "Five minutes of product management a day: short lessons, product teardowns and a library worth keeping.", url: "https://productguys.arthakram.in", image: "/projects/product-guys.jpg", tags: ["Next.js", "Three.js", "GSAP"] },
   { name: "Zero", description: "Learn. Build. Get hired.", url: "https://zero-pink-sigma.vercel.app", image: "/projects/zero.jpg", tags: ["Next.js"] },
 ];
 
