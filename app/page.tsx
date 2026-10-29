@@ -67,12 +67,12 @@ export default async function Home() {
             <article
               key={p.name}
               data-stack
-              className="sticky mb-[10vh] flex h-[78vh] origin-top flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 last:mb-0 md:grid md:grid-cols-[1.5fr_1fr]"
+              className="sticky mb-[10vh] flex h-[78vh] origin-top flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 will-change-transform last:mb-0 md:grid md:grid-cols-[1.5fr_1fr]"
               style={{ top: `calc(6rem + ${i * 1.25}rem)` }}
             >
               <a href={p.url} target="_blank" rel="noreferrer" className="group relative block min-h-0 flex-1 overflow-hidden bg-zinc-900">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.image ?? screenshot(p.url)} alt={`${p.name} preview`} loading="lazy" className="absolute inset-0 size-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
+                <img src={p.image ?? screenshot(p.url)} alt={`${p.name} preview`} decoding="async" className="absolute inset-0 size-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
               </a>
               <div className="flex flex-col justify-between gap-6 border-t border-white/10 p-6 md:border-l md:border-t-0 md:p-10">
                 <div>
@@ -100,6 +100,7 @@ export default async function Home() {
                   )}
                 </div>
               </div>
+              <div data-dim aria-hidden className="pointer-events-none absolute inset-0 bg-black opacity-0" />
             </article>
           ))}
         </div>

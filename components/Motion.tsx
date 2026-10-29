@@ -321,12 +321,10 @@ export default function Motion() {
       stackCards.forEach((card, i) => {
         const next = stackCards[i + 1];
         if (!next) return;
-        gsap.to(card, {
-          scale: 0.92 - (stackCards.length - 2 - i) * 0.02,
-          filter: "brightness(0.35)",
-          ease: "none",
-          scrollTrigger: { trigger: next, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(next).top)}px`, scrub: true },
-        });
+        // Only transform + opacity: both run on the GPU, so no repaints while scrolling.
+        gsap.timeline({ scrollTrigger: { trigger: next, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(next).top)}px`, scrub: true } })
+          .to(card, { scale: 0.92 - (stackCards.length - 2 - i) * 0.02, ease: "none", force3D: true }, 0)
+          .to(card.querySelector("[data-dim]"), { opacity: 0.65, ease: "none" }, 0);
       });
 
       ScrollTrigger.batch("[data-reveal]", {
