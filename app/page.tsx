@@ -20,7 +20,7 @@ export default async function Home() {
   return (
     <main>
       <Motion />
-      <nav className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-4 py-5 font-mono text-xs uppercase tracking-widest mix-blend-difference md:px-10">
+      <nav className="fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-white/5 bg-[#050505]/75 px-4 py-5 font-mono text-xs uppercase tracking-widest backdrop-blur-md md:px-10">
         <a href="#top">{profile.name}</a>
         <div className="flex gap-5 md:gap-8">
           <a href="#work" className="hover:opacity-60">Work</a>
@@ -101,26 +101,25 @@ export default async function Home() {
             <article
               key={a.title}
               data-reveal
-              className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-lime-300/50 ${
+              className={`group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-lime-300/50 ${
                 ["md:col-span-4", "md:col-span-2", "md:col-span-3", "md:col-span-3"][i]
               }`}
             >
-              <div className={`relative overflow-hidden ${i < 2 ? "aspect-[4/5] md:aspect-auto md:h-[34rem]" : "aspect-[16/10]"}`}>
+              <div className={`relative overflow-hidden ${i < 2 ? "aspect-[4/5] md:aspect-auto md:h-[26rem]" : "aspect-[16/10]"}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={a.image} alt={a.title} loading="lazy" className="absolute inset-0 size-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-105" />
                 {a.hoverImage && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={a.hoverImage} alt="" loading="lazy" className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                 <p className="absolute left-5 top-5 rounded-full bg-lime-300 px-4 py-1.5 font-mono text-sm font-bold text-black">
                   {a.rank} <span className="font-normal opacity-70">{a.of}</span>
                 </p>
-                <div className="absolute inset-x-5 bottom-5">
-                  <p className="font-mono text-xs uppercase tracking-widest text-zinc-400">{a.org}</p>
-                  <h3 className={`mt-2 font-semibold tracking-tight transition-colors group-hover:text-lime-300 ${i === 0 ? "text-4xl md:text-6xl" : "text-2xl md:text-3xl"}`}>{a.title}</h3>
-                  <p className="mt-2 max-w-md text-zinc-300">{a.text}</p>
-                </div>
+              </div>
+              <div className="flex-1 border-t border-white/10 p-6">
+                <p className="font-mono text-xs uppercase tracking-widest text-zinc-500">{a.org}</p>
+                <h3 className={`mt-2 font-semibold tracking-tight transition-colors group-hover:text-lime-300 ${i === 0 ? "text-4xl md:text-5xl" : "text-2xl md:text-3xl"}`}>{a.title}</h3>
+                <p className="mt-2 max-w-md text-zinc-400">{a.text}</p>
               </div>
             </article>
           ))}
