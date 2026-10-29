@@ -1,26 +1,99 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-display);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: #050505;
+  color: #f4f4f5;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #c6f432;
+  color: #000;
+}
+
+/* Film grain over everything for the cinematic look. */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(4) infinite;
+}
+
+@keyframes grain {
+  25% { background-position: -30px 20px; }
+  50% { background-position: 25px -40px; }
+  75% { background-position: -20px 35px; }
+}
+
+.marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.marquee-reverse {
+  animation-direction: reverse;
+}
+
+/* Custom cursor: a lime dot that inverts what's under it and swells over links. */
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 9999px;
+  background: #c6f432;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 0;
+  transition: width 0.3s, height 0.3s, margin 0.3s, opacity 0.3s;
+}
+.cursor.big {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+}
+@media (pointer: coarse) {
+  .cursor { display: none; }
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.tilt {
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tilt:hover {
+  transform: perspective(800px) rotateX(6deg) rotateY(-8deg) scale(1.03);
+}
+
+.glow {
+  background: radial-gradient(60% 50% at 50% 60%, rgb(198 244 50 / 0.14), transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain, .marquee { animation: none; }
+  .cursor { display: none; }
+}
+
+/* SplitText line masks clip descenders (g, y, p) on tight leading; give them room. */
+[data-heading] > *,
+[data-i="tag"] > * {
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
 }
