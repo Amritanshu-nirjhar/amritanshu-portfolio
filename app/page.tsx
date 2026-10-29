@@ -38,10 +38,9 @@ export default async function Home() {
           <p data-scrub-words className="text-3xl font-medium leading-tight tracking-tight md:text-5xl">
             {profile.bio}
           </p>
-          {/* TODO: swap for the About image Amritanshu sends */}
-          <div data-reveal className="tilt grid aspect-[4/5] place-items-center rounded-2xl border border-white/10 bg-gradient-to-br from-lime-300/20 via-zinc-900 to-zinc-950 text-8xl font-bold">
-            {profile.name[0]}
-          </div>
+          {/* Black and white to sit with the dark palette; colour comes back on hover. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img data-reveal src="/me.jpg" alt={profile.name} className="tilt aspect-[4/5] w-full rounded-2xl border border-white/10 object-cover grayscale transition-[filter,transform] duration-700 hover:grayscale-0" />
         </div>
       </section>
 
