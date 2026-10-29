@@ -2,6 +2,8 @@
 let ctx: AudioContext | null = null;
 let out: GainNode;
 let verb: ConvolverNode;
+let noiseBuf: AudioBuffer;
+let beat = 0;
 
 // Must be called from a click: browsers block audio until the user interacts.
 export function startSound() {
@@ -22,12 +24,17 @@ export function startSound() {
   const wet = ctx.createGain();
   wet.gain.value = 0.35;
   verb.connect(wet).connect(out);
+
+  noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+  const d = noiseBuf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
 }
 
 export function stopSound() {
   if (!ctx) return;
   const c = ctx;
   ctx = null;
+  clearInterval(beat);
   out.gain.setTargetAtTime(0, c.currentTime, 0.15);
   setTimeout(() => c.close(), 1000);
 }
@@ -57,7 +64,7 @@ function osc(c: AudioContext, type: OscillatorType, hz: number, dest: AudioNode,
   return o;
 }
 
-export const sfx = {
+export const sfx: Record<string, (...a: number[]) => void> = {
   // Low pad under the whole intro; its filter slowly opens up.
   drone(dur: number) {
     if (!ctx) return;
@@ -76,7 +83,7 @@ export const sfx = {
   },
 
   // Sub kick + air: lands on each word.
-  hit(peak = 0.9) {
+  hit(peak = 0.6) {
     if (!ctx) return;
     const t = ctx.currentTime;
     const g = ctx.createGain();
@@ -154,3 +161,104 @@ export const sfx = {
     n.start(t);
   },
 };
+
+// ---- The beat: 150 BPM chiptune/electro, A minor, scheduled ahead on the audio clock. ----
+
+const BPM = 150;
+const STEP = 60 / BPM / 4; // one 16th note = 0.1s
+const STEPS = 200; // 20s
+const CHORDS = [
+  [440, 523.25, 659.25], // Am
+  [349.23, 440, 523.25], // F
+  [523.25, 659.25, 783.99], // C
+  [392, 493.88, 587.33], // G
+];
+const ROOTS = [55, 43.65, 65.41, 49];
+const ARP = [0, 1, 2, 3, 2, 1, 3, 4];
+
+function drumNoise(c: AudioContext, t: number, type: BiquadFilterType, hz: number, peak: number, decay: number) {
+  const n = c.createBufferSource();
+  n.buffer = noiseBuf;
+  const f = c.createBiquadFilter();
+  f.type = type;
+  f.frequency.value = hz;
+  const g = c.createGain();
+  env(g, t, peak, 0.001, decay);
+  n.connect(f).connect(g).connect(out);
+  n.start(t);
+  n.stop(t + decay + 0.05);
+  return g;
+}
+
+function kick(c: AudioContext, t: number) {
+  const g = c.createGain();
+  env(g, t, 1, 0.002, 0.3);
+  g.connect(out);
+  osc(c, "sine", 170, g, t, 0.35).frequency.exponentialRampToValueAtTime(42, t + 0.12);
+}
+
+function note(c: AudioContext, t: number, type: OscillatorType, hz: number, peak: number, dur: number, cutoff: number) {
+  const f = c.createBiquadFilter();
+  f.frequency.value = cutoff;
+  const g = c.createGain();
+  env(g, t, peak, 0.004, dur);
+  f.connect(g).connect(out);
+  osc(c, type, hz, f, t, dur + 0.05);
+  return g;
+}
+
+// One 16th-note step of the arrangement.
+function step(c: AudioContext, s: number, t: number) {
+  const bar = Math.floor(s / 16) % 4;
+  const i = s % 16;
+  const chord = CHORDS[bar];
+  const tones = [...chord, chord[0] * 2, chord[1] * 2];
+  const intro = s < 16; // first 1.6s: arp + hats build
+  const roll = s >= 148 && s < 160; // snare roll into the break
+  const breakdown = s >= 160 && s < 166; // silence before the drop on the name
+  const outro = s >= 190;
+
+  if (breakdown) return;
+
+  // Chiptune arpeggio: square wave, 16ths, the "computer" voice.
+  if (!outro) note(c, t, "square", tones[ARP[i % 8]], intro ? 0.035 : 0.05, 0.09, 4000).connect(verb);
+
+  // Hats: 16ths, accent on the off-beat, open hat on every "and".
+  if (!outro) drumNoise(c, t, "highpass", 8000, i % 4 === 2 ? 0.16 : 0.07, i % 4 === 2 ? 0.12 : 0.03);
+
+  if (intro) {
+    if (i % 4 === 0 && s >= 8) kick(c, t);
+    return;
+  }
+
+  // Four-on-the-floor kick (the outro keeps it pounding under the name).
+  if (i % 4 === 0) kick(c, t);
+  if (outro) return;
+
+  // Clap on 2 and 4, or a rising 16th roll before the break.
+  if (roll) drumNoise(c, t, "bandpass", 1500 + (s - 148) * 150, 0.15 + (s - 148) * 0.03, 0.08);
+  else if (i === 4 || i === 12) drumNoise(c, t, "bandpass", 1600, 0.45, 0.16).connect(verb);
+
+  // Pumping bass: off-beat 8ths with octave jumps.
+  if (i % 2 === 0 && i % 4 !== 0) note(c, t, "sawtooth", ROOTS[bar] * (i % 8 === 6 ? 2 : 1), 0.32, 0.16, 700);
+  if (i === 0) note(c, t, "sine", ROOTS[bar], 0.4, 0.3, 200);
+}
+
+// Schedules the 20s track a little ahead of time so it stays tight even if the main thread hiccups.
+function music() {
+  if (!ctx) return;
+  const c = ctx;
+  let s = 0;
+  let next = c.currentTime + 0.05;
+  const pump = () => {
+    if (ctx !== c || s >= STEPS) return clearInterval(beat);
+    while (next < c.currentTime + 0.15 && s < STEPS) {
+      step(c, s++, next);
+      next += STEP;
+    }
+  };
+  pump();
+  beat = window.setInterval(pump, 25);
+}
+
+sfx.music = music;

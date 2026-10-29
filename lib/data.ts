@@ -2,7 +2,7 @@
 
 export const profile = {
   name: "Amritanshu",
-  role: "Full-stack Developer",
+  role: "CSE Student & Developer",
   tagline: "I build fast, good-looking things for the web.",
   bio: "I'm a developer who loves turning ideas into products people actually use. I work across the stack, from pixel-perfect interfaces to the APIs behind them, and I care about speed, detail and shipping.", // TODO
   email: "amritanshu.nirjhar@gmail.com",

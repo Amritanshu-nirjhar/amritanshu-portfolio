@@ -11,7 +11,7 @@ import { sfx, startSound, stopSound } from "@/lib/sound";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
-const WORDS = ["Design.", "Code.", "Ship."];
+const WORDS = ["Code.", "Compile.", "Deploy."];
 const SHAPES = Array.from({ length: 48 }, (_, i) => i);
 const CODE = ["{ }", "</>", "=>", "01", ";", "&&", "λ", "#", "[ ]", "!="];
 const CELLS = Array.from({ length: 96 }, (_, i) => i);
@@ -122,7 +122,7 @@ export default function Motion() {
         gsap.set(faces, { z: half });
 
         tl.addLabel("intro", intro0)
-          .call(() => { sfx.drone(20); sfx.riser(0.5); }, [], at(0))
+          .call(() => { sfx.music(); sfx.riser(0.5); }, [], at(0))
           // 0–0.6s: a lime hairline slices the screen.
           .from(q("[data-i=line]"), { scaleX: 0, duration: 0.4, ease: "expo.inOut" }, at(0))
           .to(q("[data-i=line]"), { scaleX: 0, transformOrigin: "right", duration: 0.2, ease: "expo.in" }, at(0.4))
@@ -355,7 +355,7 @@ export default function Motion() {
 
         <div className="absolute inset-0 grid place-items-center px-4 text-center">
           {WORDS.map((w) => (
-            <p key={w} data-i="word" className="col-start-1 row-start-1 overflow-hidden text-[18vw] font-bold leading-[0.9] tracking-[-0.06em]">
+            <p key={w} data-i="word" className="col-start-1 row-start-1 overflow-hidden pb-[0.15em] text-[18vw] font-bold leading-[0.9] tracking-[-0.06em]">
               <span className="block">{w}</span>
             </p>
           ))}
