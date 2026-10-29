@@ -97,3 +97,39 @@ body {
   padding-bottom: 0.15em;
   margin-bottom: -0.15em;
 }
+
+/* 404: RGB-split glitch on the big number. */
+.glitch {
+  position: relative;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+}
+.glitch::before {
+  color: #c6f432;
+  animation: glitch 2.4s steps(1) infinite;
+}
+.glitch::after {
+  color: #ff2bd6;
+  animation: glitch 2.4s steps(1) infinite reverse;
+}
+@keyframes glitch {
+  0%, 82%, 100% { transform: none; clip-path: inset(0 0 100% 0); }
+  84% { transform: translate(-0.04em, 0.01em); clip-path: inset(12% 0 60% 0); }
+  87% { transform: translate(0.05em, -0.01em); clip-path: inset(55% 0 20% 0); }
+  90% { transform: translate(-0.03em, 0); clip-path: inset(30% 0 45% 0); }
+  93% { transform: translate(0.04em, 0.02em); clip-path: inset(70% 0 5% 0); }
+}
+.caret {
+  animation: caret 1s steps(1) infinite;
+}
+@keyframes caret {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch::before, .glitch::after, .caret { animation: none; }
+}

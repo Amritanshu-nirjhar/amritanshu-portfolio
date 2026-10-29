@@ -316,6 +316,19 @@ export default function Motion() {
         gsap.from(split.lines, { yPercent: 100, duration: 1, stagger: 0.08, ease: "expo.out", scrollTrigger: { trigger: el, start: "top 85%" } });
       });
 
+      // Stacked project cards: as the next card slides up over one, it shrinks and dims into the pile.
+      const stackCards = gsap.utils.toArray<HTMLElement>("[data-stack]");
+      stackCards.forEach((card, i) => {
+        const next = stackCards[i + 1];
+        if (!next) return;
+        gsap.to(card, {
+          scale: 0.92 - (stackCards.length - 2 - i) * 0.02,
+          filter: "brightness(0.35)",
+          ease: "none",
+          scrollTrigger: { trigger: next, start: "top bottom", end: () => `top ${parseFloat(getComputedStyle(next).top)}px`, scrub: true },
+        });
+      });
+
       ScrollTrigger.batch("[data-reveal]", {
         start: "top 88%",
         once: true,

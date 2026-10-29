@@ -61,32 +61,44 @@ export default async function Home() {
       <section id="work" className="mx-auto max-w-6xl px-4 py-32 md:px-10 md:py-48">
         <Label n="02">Selected work</Label>
         <h2 data-heading className="mb-16 text-5xl font-bold tracking-tighter md:text-8xl">Things I&apos;ve shipped</h2>
-        <div className="grid gap-8 md:grid-cols-2">
+        {/* Each card sticks a little lower than the last, so they pile up as you scroll. */}
+        <div>
           {projects.map((p, i) => (
-            <article key={p.name} data-reveal className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-[border-color,transform] duration-500 hover:-translate-y-1 hover:border-lime-300/50">
-              <a href={p.url} target="_blank" rel="noreferrer" className="block aspect-[16/10] overflow-hidden bg-zinc-900">
+            <article
+              key={p.name}
+              data-stack
+              className="sticky mb-[10vh] flex h-[78vh] origin-top flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 last:mb-0 md:grid md:grid-cols-[1.5fr_1fr]"
+              style={{ top: `calc(6rem + ${i * 1.25}rem)` }}
+            >
+              <a href={p.url} target="_blank" rel="noreferrer" className="group relative block min-h-0 flex-1 overflow-hidden bg-zinc-900">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.image ?? screenshot(p.url)} alt={`${p.name} preview`} loading="lazy" className="h-full w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
+                <img src={p.image ?? screenshot(p.url)} alt={`${p.name} preview`} loading="lazy" className="absolute inset-0 size-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105" />
               </a>
-              <div className="p-6">
-                <div className="flex items-baseline justify-between gap-4">
-                  <h3 className="text-2xl font-semibold tracking-tight transition-colors group-hover:text-lime-300">
-                    <span className="mr-3 font-mono text-xs text-zinc-500">{String(i + 1).padStart(2, "0")}</span>
-                    {p.name}
-                  </h3>
-                  <div className="flex shrink-0 gap-4 font-mono text-xs uppercase tracking-widest text-zinc-400">
-                    {p.repo && <a href={p.repo} target="_blank" rel="noreferrer" className="hover:text-white">Code</a>}
-                    <a href={p.url} target="_blank" rel="noreferrer" className="hover:text-white">Live ↗</a>
-                  </div>
+              <div className="flex flex-col justify-between gap-6 border-t border-white/10 p-6 md:border-l md:border-t-0 md:p-10">
+                <div>
+                  <p className="font-mono text-xs text-zinc-500">
+                    <span className="text-lime-300">{String(i + 1).padStart(2, "0")}</span> / {String(projects.length).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-3 text-4xl font-bold tracking-tighter md:mt-6 md:text-6xl">{p.name}</h3>
+                  <p className="mt-3 text-zinc-400 md:mt-4 md:text-lg">{p.description ?? new URL(p.url).host}</p>
+                  {!!p.tags?.length && (
+                    <ul className="mt-4 flex flex-wrap gap-2 md:mt-6">
+                      {p.tags.map((t) => (
+                        <li key={t} className="rounded-full border border-white/10 px-3 py-1 font-mono text-xs text-zinc-300">{t}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-                <p className="mt-2 text-zinc-400">{p.description ?? new URL(p.url).host}</p>
-                {!!p.tags?.length && (
-                  <ul className="mt-4 flex flex-wrap gap-2">
-                    {p.tags.map((t) => (
-                      <li key={t} className="rounded-full border border-white/10 px-3 py-1 font-mono text-xs text-zinc-300">{t}</li>
-                    ))}
-                  </ul>
-                )}
+                <div className="flex gap-3">
+                  <a href={p.url} target="_blank" rel="noreferrer" className="rounded-full bg-lime-300 px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest text-black transition-transform hover:scale-105">
+                    Live site ↗
+                  </a>
+                  {p.repo && (
+                    <a href={p.repo} target="_blank" rel="noreferrer" className="rounded-full border border-white/20 px-6 py-3 font-mono text-xs uppercase tracking-widest text-zinc-300 hover:border-white hover:text-white">
+                      Code
+                    </a>
+                  )}
+                </div>
               </div>
             </article>
           ))}

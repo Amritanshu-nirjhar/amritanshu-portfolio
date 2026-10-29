@@ -4,7 +4,7 @@ export const profile = {
   name: "Amritanshu",
   role: "CSE Student & Developer",
   tagline: "I build fast, good-looking things for the web.",
-  bio: "I'm a developer who loves turning ideas into products people actually use. I work across the stack, from pixel-perfect interfaces to the APIs behind them, and I care about speed, detail and shipping.", // TODO
+  bio: "I'm a CSE student at Newton School of Technology, Rishihood University. I build 3D web experiences people remember, chair Model UN committees, and placed 4th out of 860 teams at a national hackathon in my first semester.",
   email: "amritanshu.nirjhar@gmail.com",
   altEmail: "amritanshu.n26025@nst.rishihood.edu.in",
   resume: "/resume.pdf", // TODO: drop your resume in /public
