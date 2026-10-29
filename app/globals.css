@@ -123,13 +123,7 @@ body {
   90% { transform: translate(-0.03em, 0); clip-path: inset(30% 0 45% 0); }
   93% { transform: translate(0.04em, 0.02em); clip-path: inset(70% 0 5% 0); }
 }
-.caret {
-  animation: caret 1s steps(1) infinite;
-}
-@keyframes caret {
-  50% { opacity: 0; }
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .glitch::before, .glitch::after, .caret { animation: none; }
+  .glitch::before, .glitch::after { animation: none; }
 }
